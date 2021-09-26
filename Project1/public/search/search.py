@@ -88,33 +88,10 @@ def depthFirstSearch(problem):
     """
     "*** YOUR CODE HERE ***"
 
-    def translate(path):
-        '''
-        This function translate path-string to path-directions
-        '''
-        from game import Directions
-        w = Directions.WEST
-        n = Directions.NORTH
-        e = Directions.EAST
-        s = Directions.SOUTH
-        path2 = []
-
-        for i in path:
-            if i == 'West':
-                path2.append(w)
-            elif i == 'North':
-                path2.append(n)
-            elif i == "East":
-                path2.append(e)
-            else:
-                path2.append(s)
-        path2 += [Directions.STOP]
-        return path2
-
-    Start_edge = problem.getStartState()    # start state
+    startState = problem.getStartState()    # start state
     visited = []
     s = util.Stack() # initialize stack
-    s.push((Start_edge, [])) # item example: ((5,5),'w')
+    s.push((startState, [])) # item example: ((5,5),'w')
 
     while s.isEmpty() is False:
         (parent,path) = s.pop()
@@ -133,17 +110,19 @@ def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
 
-    Start_edge = problem.getStartState()    # start state
+    startState = problem.getStartState()    # start state
     visited = []
-    q = util.Queue() # initialize stack
-    q.push((Start_edge, [])) # item example: ((5,5),['w'])
+    q = util.Queue() # initialize queue
+    q.push((startState, [])) # item example: ((5,5),['w'])
 
     while q.isEmpty() is False:
         (parent,path) = q.pop()
+        #print('cur state is', parent)
         if parent not in visited:
             if problem.isGoalState(parent) is True:
                 return translate(path)
             visited.append(parent)
+            print(parent)
             for child in problem.getSuccessors(parent):
                 edge = child[0]
                 q.push((edge,path + [child[1]]))
@@ -151,10 +130,10 @@ def breadthFirstSearch(problem):
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    Start_edge = problem.getStartState()    # start state
+    startState = problem.getStartState()    # start state
     visited = []
     pq = util.PriorityQueue() # initialize stack
-    pq.push((Start_edge, [], 0),0) # (item, priority) example: ((5,5),['w'], 0)
+    pq.push((startState, [], 0),0) # (item, priority) example: ((5,5),['w'], 0)
 
     while pq.isEmpty() is False:
         (parent, path, total_cost) = pq.pop()
@@ -178,10 +157,10 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    Start_edge = problem.getStartState()    # start state
+    startState = problem.getStartState()    # start state
     visited = []
     pq = util.PriorityQueue() # initialize stack
-    pq.push((Start_edge, [], 0),0) # (item, priority) example: ((5,5),['w'], 0)
+    pq.push((startState, [], 0),0) # (item, priority) example: ((5,5),['w'], 0)
 
     while pq.isEmpty() is False:
         (parent, path, total_cost) = pq.pop()
