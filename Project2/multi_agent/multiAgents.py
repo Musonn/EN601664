@@ -287,7 +287,6 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
           legal moves.
         """
         "*** YOUR CODE HERE ***"
-        #print(self.getValue(gameState, None, 0))
         return self.getValue(gameState, None, 0)[0]
 
     def getValue(self, gameState, action, index):
@@ -345,7 +344,7 @@ def betterEvaluationFunction(currentGameState):
     "*** YOUR CODE HERE ***"
     availableFood = curFood.asList()
     GhostPos = currentGameState.getGhostPositions()
-    #print(newGhostPos)
+
     # find nearest food
     closestFood = float("inf")
     closestCapsule = float("inf")
