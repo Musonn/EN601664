@@ -1,3 +1,4 @@
+#  Muchen Li and Boyang Zhang
 # searchAgents.py
 # ---------------
 # Licensing Information:  You are free to use or extend these projects for
@@ -311,7 +312,7 @@ class CornersProblem(search.SearchProblem):
         if node in self.corners:
             if node not in visitedCorners:
                 visitedCorners.append(node)
-                print(visitedCorners)
+                #print(visitedCorners)
             return len(visitedCorners) == 4
         return False
 
@@ -342,13 +343,12 @@ class CornersProblem(search.SearchProblem):
             if not self.walls[nextx][nexty]:
                 nextNode = (nextx,nexty)
                 nextVisitedCorners = visitedCorners[:]
-                if nextNode in self.corners:
-                    cornerState = nextNode
-                    if cornerState not in nextVisitedCorners:
-                        nextVisitedCorners.append(cornerState)
+                if nextNode in self.corners:    # if next node is a corner
+                    if nextNode not in nextVisitedCorners:  # if this corner has not been visited
+                        nextVisitedCorners.append(nextNode)
                 cost = 1
-                happy_face = ((nextNode,nextVisitedCorners), action, cost)
-                successors.append(happy_face)
+                successor_triple = ((nextNode,nextVisitedCorners), action, cost)
+                successors.append(successor_triple)
 
         self._expanded += 1 # DO NOT CHANGE
         return successors
@@ -384,7 +384,30 @@ def cornersHeuristic(state, problem):
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
-    return 0 # Default to trivial solution
+    current_state = state[0]
+    #print(current_state)
+    current_visitedFourCorners = state[1]
+    unvisited_corners = list(set(corners)-set(current_visitedFourCorners))
+    #print(unvisited_corners)
+
+    final_cost = 0
+    while len(unvisited_corners)>0:
+        #print('+++')
+        hcost = [] # heuristic costs: distance in a maze
+        #print(current_state)
+        for cor in unvisited_corners:
+            hcost.append(((current_state[0]-cor[0])**2 + (current_state[1]-cor[1])**2)**0.5) # euclidean distance
+        min_hcost = min(hcost)
+        #print(min_hcost)
+        cor_id = hcost.index(min_hcost)
+        selected_cor = unvisited_corners[cor_id]
+        current_state = selected_cor
+        #print(selected_cor)
+        final_cost = final_cost + min_hcost
+        unvisited_corners.remove(selected_cor)
+        #print(unvisited_corners)
+
+    return final_cost # Default to trivial solution
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
@@ -478,7 +501,37 @@ def foodHeuristic(state, problem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
-    return 0
+    # ref: answer by Antonio Juric from https://stackoverflow.com/questions/9994913/pacman-what-kinds-of-heuristics-are-mainly-used?rq=1
+    unvisited_foods = foodGrid.asList()
+
+    max_list = [0,0]
+    max_coordinate_list = [(0,0),(0,0)]
+    for food in unvisited_foods:
+        tmp_h = int(util.manhattanDistance(food, position))
+        for max_cost in max_list:
+            if tmp_h > max_cost:
+                max_list.append(tmp_h)
+                del max_list[0]
+                max_coordinate_list.append(food)
+                del max_coordinate_list[0]
+                break
+    #print(max_list)
+    y = sorted(max_list)[0] # the second largest distance from the current state
+    x = util.manhattanDistance(max_coordinate_list[0],max_coordinate_list[1]) # the distance btw the two furthest food
+
+    if (0,0) in max_coordinate_list: # one or zero food in the maze
+        y=max_list[1] # the non-zero distance
+        x=0 # since there's at most one food, distance in btw makes no sense. x = 0
+    return x+y  # 8902
+
+    # max_cost = 0    # Default to trivial solution
+    # for food in unvisited_foods:
+    #     tmp_h = int(util.manhattanDistance(food, position))
+    #     max_cost = max(tmp_h,max_cost)
+    #return len(unvisited_foods) # 12517 nodes
+    #return min_cost + len(unvisited_foods) # 12571 nodes
+    #return min_cost + len(unvisited_foods)/5 # 15942 nodes
+    #return max_cost #  9551 nodes
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
@@ -509,6 +562,7 @@ class ClosestDotSearchAgent(SearchAgent):
         problem = AnyFoodSearchProblem(gameState)
 
         "*** YOUR CODE HERE ***"
+        return search.bfs(problem)
         util.raiseNotDefined()
 
 class AnyFoodSearchProblem(PositionSearchProblem):
@@ -545,6 +599,7 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         x,y = state
 
         "*** YOUR CODE HERE ***"
+        return self.food[x][y]
         util.raiseNotDefined()
 
 def mazeDistance(point1, point2, gameState):

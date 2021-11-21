@@ -1,3 +1,4 @@
+# Boyang Zhang, Muchen Li
 # search.py
 # ---------
 # Licensing Information:  You are free to use or extend these projects for
@@ -98,7 +99,8 @@ def depthFirstSearch(problem):
         if parent not in visited:
             if problem.isGoalState(parent) is True:
                 #print('path is', path)
-                return translate(path)   # till here the path is finished. Next is to translate into correct format
+                return path
+                #return translate(path)   # till here the path is finished. Next is to translate into correct format
             visited.append(parent)
             for child in problem.getSuccessors(parent):
                 edge = child[0]
@@ -120,9 +122,8 @@ def breadthFirstSearch(problem):
         #print('cur state is', parent)
         if parent not in visited:
             if problem.isGoalState(parent) is True:
-                return translate(path)
+                return path
             visited.append(parent)
-            print(parent)
             for child in problem.getSuccessors(parent):
                 edge = child[0]
                 q.push((edge,path + [child[1]]))
@@ -133,20 +134,23 @@ def uniformCostSearch(problem):
     startState = problem.getStartState()    # start state
     visited = []
     pq = util.PriorityQueue() # initialize stack
-    pq.push((startState, [], 0),0) # (item, priority) example: ((5,5),['w'], 0)
+    pq.push((startState, [], 0), 0) # (state, priority) example: ((5,5),['w'], 0)
+                                    # priority is a parameter used by priority queue
 
     while pq.isEmpty() is False:
-        (parent, path, total_cost) = pq.pop()
+        (parent, path, cost) = pq.pop()
+        #print(parent,total_cost)
         if parent not in visited:
             if problem.isGoalState(parent) is True:
-                return translate(path)
+                return path
             visited.append(parent)
             for child in problem.getSuccessors(parent):
                 edge = child[0]
                 direction = path + [child[1]]
-                total_cost += child[2]
-                pq.update((edge,direction,total_cost),total_cost)
-            
+                total_cost = cost + child[2]
+                pq.push((edge,direction,total_cost), total_cost)
+                #print(edge, total_cost)
+
 def nullHeuristic(state, problem=None):
     """
     A heuristic function estimates the cost from the current state to the nearest
@@ -157,25 +161,26 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    startState = problem.getStartState()    # start state
+    startNode = problem.getStartState()    # start state
+    start_total_cost = heuristic(startNode,problem)+0
     visited = []
     pq = util.PriorityQueue() # initialize stack
-    pq.push((startState, [], 0),0) # (item, priority) example: ((5,5),['w'], 0)
-
+    pq.push((startNode, [], 0),start_total_cost) # (state, priority): Here state is a tuple containing the node, path and cost. example: ((5,5),['w'], 0)
+                                    # priority is a parameter used by priority queue
     while pq.isEmpty() is False:
-        (parent, path, total_cost) = pq.pop()
+        parent, path, cost = pq.pop()
+        #print(parent, cost)
         if parent not in visited:
             if problem.isGoalState(parent) is True:
-                return translate(path)
+                return path
             visited.append(parent)
             for child in problem.getSuccessors(parent):
-                #print('path and child are:',path,child[1])
                 edge = child[0]
                 direction = path + [child[1]]
-                print(heuristic(parent,problem))
-                total_cost = total_cost + child[2] + heuristic(parent, problem)
-                pq.update((edge,direction,total_cost),total_cost)
-
+                if edge not in visited:
+                    total_cost = cost + child[2] 
+                    thepriority = total_cost + heuristic(edge, problem)
+                    pq.push((edge,direction,total_cost),thepriority)
 
 def translate(path):
     '''
@@ -193,7 +198,6 @@ def translate(path):
         elif i == 'North': path2.append(n)
         elif i == "East": path2.append(e)
         else: path2.append(s)
-    path2 += [Directions.STOP]
     return path2
 
 # Abbreviations
