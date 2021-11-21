@@ -515,13 +515,13 @@ def foodHeuristic(state, problem):
                 max_coordinate_list.append(food)
                 del max_coordinate_list[0]
                 break
-    #print(max_list)
+
     y = sorted(max_list)[0] # the second largest distance from the current state
     x = util.manhattanDistance(max_coordinate_list[0],max_coordinate_list[1]) # the distance btw the two furthest food
 
     if (0,0) in max_coordinate_list: # one or zero food in the maze
         y=max_list[1] # the non-zero distance
-        x=0 # since there's at most one food, distance in btw makes no sense. x = 0
+        x=0 # since there's at most one food, distance in btw makes no sense. Set x = 0
     return x+y  # 8902
 
     # max_cost = 0    # Default to trivial solution

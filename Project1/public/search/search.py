@@ -12,7 +12,6 @@
 # Student side autograding was added by Brad Miller, Nick Hay, and
 # Pieter Abbeel (pabbeel@cs.berkeley.edu).
 
-
 """
 In search.py, you will implement generic search algorithms which are called by
 Pacman agents (in searchAgents.py).
@@ -117,11 +116,11 @@ def breadthFirstSearch(problem):
     q = util.Queue() # initialize queue
     q.push((startState, [])) # item example: ((5,5),['w'])
 
-    while q.isEmpty() is False:
+    while not q.isEmpty():
         (parent,path) = q.pop()
         #print('cur state is', parent)
         if parent not in visited:
-            if problem.isGoalState(parent) is True:
+            if problem.isGoalState(parent):
                 return path
             visited.append(parent)
             for child in problem.getSuccessors(parent):
