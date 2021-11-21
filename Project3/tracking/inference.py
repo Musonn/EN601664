@@ -192,7 +192,6 @@ class InferenceModule:
         Return the probability P(noisyDistance | pacmanPosition, ghostPosition).
         """
         "*** YOUR CODE HERE ***"
-        # fix special case
         if noisyDistance is None:
             return 1 if ghostPosition == jailPosition else 0
         elif ghostPosition == jailPosition: return 0
@@ -524,7 +523,7 @@ class JointParticleFilter(ParticleFilter):
             "*** YOUR CODE HERE ***"
             for i in range(self.numGhosts):
                 newPosDist = self.getPositionDistribution(gameState, oldParticle, i, self.ghostAgents[i])
-                newParticle[i] = newPosDist.sample()    # update particle(ghost position) by sample on the new distribution
+                newParticle[i] = newPosDist.sample()    # update particle( i.e. ghost position) by sample on the new distribution
 
             """*** END YOUR CODE HERE ***"""
             newParticles.append(tuple(newParticle))
